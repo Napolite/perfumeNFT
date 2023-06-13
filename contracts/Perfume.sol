@@ -5,6 +5,7 @@ contract  PerfumeNFT {
     struct Perfume {
         string name;
         string perfID;
-        string 
+        string uri;
+        string owner;
     }
 }
