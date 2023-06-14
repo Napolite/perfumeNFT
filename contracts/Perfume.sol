@@ -60,4 +60,8 @@ contract  PerfumeNFT {
     function viewPerfume(string calldata id) external returns(Perfume memory){
         return perfume[id];
     }
+
+    function getSeller(string calldata id) external returns(string memory){
+        return perfume[id].vendorID;
+    }
 }
