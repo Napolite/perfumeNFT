@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts/utils/Strings.sol";
+
 contract  PerfumeNFT {
 
     event Minted(string name, string uri, address owner, string tokenID);
@@ -17,8 +19,11 @@ contract  PerfumeNFT {
         bool exists;
     }
 
-    mapping ( string => PerfumeNFT) name;
-    mapping (address => Vendor) vendor;
+    Perfume private perfumes[];
+
+    mapping ( string => Perfume) private perfume;
+    mapping (address => Vendor) private vendor;
+    uint public totalSupply = 0;
 
     uint256 PerfumesMinted = 0;
 
@@ -27,7 +32,16 @@ contract  PerfumeNFT {
         _;
     }
 
-    function  mint() external onlyVendor{
-        
+    function  mint(_name, _uri, _price) external onlyVendor{
+        string tStamp = Strings.toString(block.timeStamp);
+        string id = string.concat(_name[0:5],tStamp[3:5]);
+        Perfume newProduct = Perfume(_name, _uri, _price, msg.sender, true);
+        perfumes[totalSupply] = newProduct;
+
+        perfume[id] = newProduct;
+
+        totalSupply++;
+
+        emit Minted(_name, _owner)
     }
 }
