@@ -56,4 +56,8 @@ contract  PerfumeNFT {
         string memory id = string.concat(Strings.toString(address)[0:4],Strings.toString(block.timestamp)[3:5]);
         Vendor memory newVendor = Vendor(_vendor,id, true);
     }
+
+    function viewPerfume(string calldata id) external returns(Perfume memory){
+        return perfume[id];
+    }
 }
