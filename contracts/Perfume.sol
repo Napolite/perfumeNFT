@@ -53,7 +53,7 @@ contract  PerfumeNFT {
     }
 
     function registerVendor(address _vendor) external onlyOwner{
-        string memory id = string.concat(Strings.toString(address)[0:4],Strings.toString(block.timestamp)[3:5]);
+        string memory id = string.concat(Strings.toString(_vendor)[0:4],Strings.toString(block.timestamp)[3:5]);
         Vendor memory newVendor = Vendor(_vendor,id, true);
     }
 
