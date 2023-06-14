@@ -52,7 +52,7 @@ contract  PerfumeNFT {
         emit Minted(_name,msg.sender);
     }
 
-    function registerVendor(address _vendor) external onlyOwner{
+    function registerVendor(string calldata _vendor) external onlyOwner{
         string memory id = string.concat(Strings.toString(_vendor)[0:4],Strings.toString(block.timestamp)[3:5]);
         Vendor memory newVendor = Vendor(_vendor,id, true);
     }
