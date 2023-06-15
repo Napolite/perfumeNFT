@@ -5,28 +5,27 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "./helpers/strings.sol";
 
 contract PerfumeNFT {
-    event Minted(string name, address owner);
+    event Minted(string name, address owner, string ID);
     struct Perfume {
         string name;
         string uri;
         uint price;
         address owner;
-        // string vendorID;
+        string vendorID;
         bool exists;
     }
 
     struct Vendor {
-        address vendor;
         bool exists;
         string vendorID;
     }
 
-    Perfume[] perfumes;
+    Perfume[] private perfumes;
 
     mapping(string => Perfume) private perfume;
     mapping(address => Vendor) private vendors;
     uint public totalSupply = 0;
-    address owner;
+    address public owner;
 
     uint256 PerfumesMinted = 0;
 
@@ -62,7 +61,7 @@ contract PerfumeNFT {
             _uri,
             _price,
             msg.sender,
-            // vendors[msg.sender].vendorID,
+            vendors[msg.sender].vendorID,
             true
         );
 
@@ -70,7 +69,18 @@ contract PerfumeNFT {
 
         totalSupply++;
 
-        emit Minted(id, msg.sender);
+        emit Minted(id, msg.sender, vendors[msg.sender].vendorID);
+    }
+
+    function registerVendor(address _vendor) external onlyOwner returns(Vendor memory){
+        string memory id = string.concat(StringHelpers.substring( Strings.toHexString(_vendor), 0, 3), 
+        StringHelpers.substring(Strings.toString(block.timestamp),0,3));
+
+        Vendor memory nVendor = Vendor(true, id);
+
+        vendors[_vendor] = nVendor; 
+
+        return nVendor;
     }
 
     function viewPerfume(
