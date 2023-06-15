@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./helpers/strings.sol";
+import "./interfaces/Ibep20.sol";
 
 contract PerfumeNFT {
     event Minted(string name, address owner, string ID);
@@ -22,6 +23,8 @@ contract PerfumeNFT {
     }
 
     Perfume[] private perfumes;
+
+    IBEP20 token;
 
     mapping(string => Perfume) private perfume;
     mapping(address => Vendor) private vendors;
@@ -50,6 +53,7 @@ contract PerfumeNFT {
 
     constructor() {
         owner = msg.sender;
+        token = IBEP20(0xDcdB9eB2aCC631001550E246Ea0dd6e697CBEF3c);
     }
 
     function mint(
@@ -95,4 +99,8 @@ contract PerfumeNFT {
     function getVendor(string calldata id) external view returns (string memory) {
         return perfume[id].vendorID;
     }
+
+    // function buyPerfume(string calldata id) external view{
+
+    // }
 }
