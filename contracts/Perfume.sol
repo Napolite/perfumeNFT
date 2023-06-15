@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./helpers/strings.sol";
@@ -11,7 +11,7 @@ contract PerfumeNFT {
         string uri;
         uint price;
         address owner;
-        string vendorID;
+        // string vendorID;
         bool exists;
     }
 
@@ -43,11 +43,15 @@ contract PerfumeNFT {
         _;
     }
 
+    constructor() {
+        owner = msg.sender;
+    }
+
     function mint(
         string calldata _name,
         string calldata _uri,
         uint _price
-    ) external onlyVendor {
+    ) external {
         string memory tStamp = Strings.toString(block.timestamp);
         string memory id = string.concat(
             _name[0:5],
@@ -58,31 +62,24 @@ contract PerfumeNFT {
             _uri,
             _price,
             msg.sender,
-            vendors[msg.sender].vendorID,
+            // vendors[msg.sender].vendorID,
             true
         );
-        perfumes[totalSupply] = newProduct;
 
         perfume[id] = newProduct;
 
         totalSupply++;
 
-        emit Minted(_name, msg.sender);
+        emit Minted(id, msg.sender);
     }
 
-    function registerVendor(address _vendor) external onlyOwner {
-        string memory id = string.concat(
-            StringHelpers.substringFromBytes(abi.encodePacked(_vendor), 0, 4),
-            StringHelpers.substring(Strings.toString(block.timestamp), 3, 5)
-        );
-        Vendor memory newVendor = Vendor(_vendor, true, id);
-    }
-
-    function viewPerfume(string calldata id) external returns (Perfume memory) {
+    function viewPerfume(
+        string calldata id
+    ) external view returns (Perfume memory) {
         return perfume[id];
     }
 
-    function getSeller(string calldata id) external returns (string memory) {
-        return perfume[id].vendorID;
-    }
+    // function getSeller(string calldata id) external view returns (string memory) {
+    //     return perfume[id].vendorID;
+    // }
 }
