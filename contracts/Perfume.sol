@@ -2,9 +2,9 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "./helpers/strings.sol";
 
-contract  PerfumeNFT {
-
+contract PerfumeNFT {
     event Minted(string name, address owner);
     struct Perfume {
         string name;
@@ -15,7 +15,7 @@ contract  PerfumeNFT {
         bool exists;
     }
 
-    struct Vendor{
+    struct Vendor {
         address vendor;
         bool exists;
         string vendorID;
@@ -23,45 +23,66 @@ contract  PerfumeNFT {
 
     Perfume[] perfumes;
 
-    mapping ( string => Perfume) private perfume;
-    mapping (address => Vendor) private vendors;
+    mapping(string => Perfume) private perfume;
+    mapping(address => Vendor) private vendors;
     uint public totalSupply = 0;
     address owner;
 
     uint256 PerfumesMinted = 0;
 
-    modifier  onlyVendor{
+    modifier onlyVendor() {
         require(vendors[msg.sender].exists == true, "Caller not a vendor");
         _;
     }
 
-    modifier onlyOwner{
-        require(msg.sender == owner, "Only contract owner can call this function");
+    modifier onlyOwner() {
+        require(
+            msg.sender == owner,
+            "Only contract owner can call this function"
+        );
         _;
     }
 
-    function  mint(string calldata _name,string calldata _uri,uint _price) external onlyVendor{
-        string memory id = string.concat(_name[0:5],Strings.toString(block.timestamp)[3:5]);
-        Perfume memory newProduct = Perfume(_name, _uri, _price, msg.sender, vendors[msg.sender].vendorID, true);
+    function mint(
+        string calldata _name,
+        string calldata _uri,
+        uint _price
+    ) external onlyVendor {
+        string memory tStamp = Strings.toString(block.timestamp);
+        string memory id = string.concat(
+            _name[0:5],
+            StringHelpers.substring(tStamp, 0, 3)
+        );
+        Perfume memory newProduct = Perfume(
+            _name,
+            _uri,
+            _price,
+            msg.sender,
+            vendors[msg.sender].vendorID,
+            true
+        );
         perfumes[totalSupply] = newProduct;
 
         perfume[id] = newProduct;
 
         totalSupply++;
 
-        emit Minted(_name,msg.sender);
+        emit Minted(_name, msg.sender);
     }
 
-    function registerVendor(string calldata _vendor) external onlyOwner{
-        string memory id = string.concat(Strings.toString(_vendor)[0:4],Strings.toString(block.timestamp)[3:5]);
-        Vendor memory newVendor = Vendor(_vendor,id, true);
+    function registerVendor(address _vendor) external onlyOwner {
+        string memory id = string.concat(
+            StringHelpers.substringFromBytes(abi.encodePacked(_vendor), 0, 4),
+            StringHelpers.substring(Strings.toString(block.timestamp), 3, 5)
+        );
+        Vendor memory newVendor = Vendor(_vendor, true, id);
     }
 
-    function viewPerfume(string calldata id) external returns(Perfume memory){
+    function viewPerfume(string calldata id) external returns (Perfume memory) {
         return perfume[id];
     }
 
-    function getSeller(string calldata id) external returns(string memory){
+    function getSeller(string calldata id) external returns (string memory) {
         return perfume[id].vendorID;
     }
 }
