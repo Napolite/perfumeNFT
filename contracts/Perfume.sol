@@ -6,6 +6,7 @@ import "./helpers/strings.sol";
 
 contract PerfumeNFT {
     event Minted(string name, address owner, string ID);
+    event createdVendor(string id, address _address);
     struct Perfume {
         string name;
         string uri;
@@ -50,7 +51,7 @@ contract PerfumeNFT {
         string calldata _name,
         string calldata _uri,
         uint _price
-    ) external {
+    ) external onlyVendor {
         string memory tStamp = Strings.toString(block.timestamp);
         string memory id = string.concat(
             _name[0:5],
@@ -72,15 +73,12 @@ contract PerfumeNFT {
         emit Minted(id, msg.sender, vendors[msg.sender].vendorID);
     }
 
-    function registerVendor(address _vendor) external onlyOwner returns(Vendor memory){
+    function registerVendor(address _vendor) external onlyOwner onlyOwner{
         string memory id = string.concat(StringHelpers.substring( Strings.toHexString(_vendor), 0, 3), 
         StringHelpers.substring(Strings.toString(block.timestamp),0,3));
-
         Vendor memory nVendor = Vendor(true, id);
-
         vendors[_vendor] = nVendor; 
-
-        return nVendor;
+        emit createdVendor(id, _vendor);
     }
 
     function viewPerfume(
@@ -89,7 +87,7 @@ contract PerfumeNFT {
         return perfume[id];
     }
 
-    // function getSeller(string calldata id) external view returns (string memory) {
-    //     return perfume[id].vendorID;
-    // }
+    function getSeller(string calldata id) external view returns (string memory) {
+        return perfume[id].vendorID;
+    }
 }
