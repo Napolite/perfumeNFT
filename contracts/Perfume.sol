@@ -43,6 +43,11 @@ contract PerfumeNFT {
         _;
     }
 
+    modifier onlyBuyer(string calldata id){
+        require(msg.sender == perfume[id].owner, "Only NFT holder can view details");
+        _;
+    }
+
     constructor() {
         owner = msg.sender;
     }
@@ -83,11 +88,11 @@ contract PerfumeNFT {
 
     function viewPerfume(
         string calldata id
-    ) external view returns (Perfume memory) {
+    ) external view onlyBuyer(id) returns (Perfume memory) {
         return perfume[id];
     }
 
-    function getSeller(string calldata id) external view returns (string memory) {
+    function getVendor(string calldata id) external view returns (string memory) {
         return perfume[id].vendorID;
     }
 }
